@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Login</title>
+
+<style>
+:root {
+  --paper:#f8f6ef;
+  --ink:#23252d;
+  --shell:#fff;
+  --screen:#1e2735;
+  --field:#fff;
+  --accent:#ff6b4b;
+  --accent-dark:#e45135;
+  --teal:#2ec4b6;
+  --yellow:#ffc53d;
+  --muted:#7d8490;
+  --line:3px solid #23252d;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Segoe UI,system-ui,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+}
+
+.scene{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+
+.stage{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* ROBOT */
+
+.robot{
+  position:relative;
+  margin-bottom:-20px;
+  animation:float 3s infinite alternate;
+}
+
+@keyframes float{
+  to{transform:translateY(-8px)}
+}
+
+.bubble{
+  position:absolute;
+  bottom:160px;
+  left:50%;
+  transform:translateX(-50%);
+  background:white;
+  padding:10px 15px;
+  border:var(--line);
+  border-radius:15px;
+  width:max-content;
+}
+
+.head{
+  width:150px;
+  height:140px;
+  background:white;
+  border:var(--line);
+  border-radius:35px;
+  padding:20px;
+}
+
+.screen{
+  height:90px;
+  background:var(--screen);
+  border-radius:25px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:25px;
+}
+
+.eye{
+  width:18px;
+  height:28px;
+  background:white;
+  border-radius:10px;
+  transition:.2s;
+}
+
+.blink .eye{
+  transform:scaleY(.1);
+}
+
+.mouth{
+  width:30px;
+  height:10px;
+  background:white;
+  border-radius:0 0 20px 20px;
+  position:absolute;
+  margin-top:55px;
+}
+
+.antenna{
+  width:5px;
+  height:25px;
+  background:#23252d;
+  margin:auto;
+}
+
+.tip{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:var(--accent);
+}
+
+/* FORM */
+
+.card{
+  width:340px;
+  background:white;
+  padding:30px;
+  border:var(--line);
+  border-radius:20px;
+  box-shadow:8px 8px 0 var(--ink);
+}
+
+h1{
+  font-size:20px;
+  text-align:center;
+}
+
+.field{
+  display:flex;
+  margin:15px 0;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:2px solid #ccc;
+  border-radius:10px;
+  font-size:15px;
+}
+
+button{
+  width:100%;
+  height:50px;
+  background:var(--accent);
+  color:white;
+  border:var(--line);
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:4px 5px 0 var(--ink);
+}
+
+button:active{
+  transform:translateY(4px);
+  box-shadow:none;
+}
+
+.success{
+  background:var(--teal);
+}
+
+.shake{
+  animation:shake .4s;
+}
+
+@keyframes shake{
+25%{transform:translateX(-8px)}
+50%{transform:translateX(8px)}
+75%{transform:translateX(-5px)}
+}
+
+.confetti{
+ position:absolute;
+ width:10px;
+ height:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="scene">
+
+<div class="stage">
+
+<div class="robot" id="robot">
+
+<div class="bubble" id="bubble">
+Hi. I'm Volt. I guard this form.
+</div>
+
+<div class="antenna">
+<div class="tip"></div>
+</div>
+
+<div class="head">
+
+<div class="screen" id="eyes">
+<div class="eye"></div>
+<div class="eye"></div>
+<div class="mouth"></div>
+</div>
+
+</div>
+
+</div>
+
+
+<form class="card" id="form">
+
+<h1>
+Beep boop. Who goes there?
+</h1>
+
+<div class="field">
+<input id="name" placeholder="Your name">
+</div>
+
+
+<div class="field">
+<input id="email" placeholder="Your email">
+</div>
+
+
+<div class="field">
+<input id="password" type="password" placeholder="Password">
+</div>
+
+
+<button id="loginBtn">
+LOG ME IN
+</button>
+
+</form>
+
+</div>
+</div>
+
+
+<script>
+
+const robot=document.getElementById("robot");
+const form=document.getElementById("form");
+const nameI=document.getElementById("name");
+const emailI=document.getElementById("email");
+const passI=document.getElementById("password");
+const btn=document.getElementById("loginBtn");
+const bubble=document.getElementById("bubble");
+const eyes=document.getElementById("eyes");
+
+let done=false;
+
+
+function say(text){
+ bubble.textContent=text;
+}
+
+
+function mood(type){
+ robot.dataset.mood=type;
+}
+
+
+passI.addEventListener("focus",()=>{
+ say("Password mode activated 🤖");
+ eyes.classList.add("blink");
+});
+
+
+passI.addEventListener("blur",()=>{
+ eyes.classList.remove("blink");
+});
+
+
+form.addEventListener("submit",(e)=>{
+
+e.preventDefault();
+
+if(done)return;
+
+
+if(!nameI.value.trim()){
+ say("I need your name.");
+ form.classList.add("shake");
+ setTimeout(()=>form.classList.remove("shake"),400);
+ return;
+}
+
+
+if(!emailI.value.includes("@")){
+ say("That email looks suspicious.");
+ return;
+}
+
+
+if(!passI.value){
+ say("Password required.");
+ return;
+}
+
+
+done=true;
+
+mood("success");
+
+say(`Access granted. Welcome ${nameI.value}!`);
+
+btn.classList.add("success");
+btn.textContent="ACCESS GRANTED ✓";
+
+confetti();
+
+setTimeout(()=>{
+done=false;
+btn.classList.remove("success");
+btn.textContent="LOG ME IN";
+say("Again? I could do this all day.");
+},5000);
+
+
+});
+
+
+document.addEventListener("mousemove",(e)=>{
+
+if(done)return;
+
+let x=(e.clientX/window.innerWidth-.5)*20;
+let y=(e.clientY/window.innerHeight-.5)*20;
+
+eyes.style.transform=
+`translate(${x}px,${y}px)`;
+
+});
+
+
+setInterval(()=>{
+
+if(!done){
+
+eyes.classList.add("blink");
+
+setTimeout(()=>{
+eyes.classList.remove("blink");
+},150);
+
+}
+
+},3000);
+
+
+
+function confetti(){
+
+let colors=[
+"#ff6b4b",
+"#2ec4b6",
+"#ffc53d",
+"#23252d"
+];
+
+for(let i=0;i<60;i++){
+
+let c=document.createElement("span");
+
+c.className="confetti";
+
+c.style.background=
+colors[Math.floor(Math.random()*colors.length)];
+
+document.body.appendChild(c);
+
+
+let x=Math.random()*window.innerWidth;
+let y=window.innerHeight/2;
+
+
+c.style.left=x+"px";
+c.style.top=y+"px";
+
+
+c.animate([
+{
+transform:"translateY(0)",
+opacity:1
+},
+{
+transform:`translateY(${300+Math.random()*300}px) rotate(600deg)`,
+opacity:0
+}
+
+],
+{
+duration:1200
+});
+
+
+setTimeout(()=>c.remove(),1200);
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
